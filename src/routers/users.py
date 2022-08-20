@@ -9,14 +9,14 @@ router = APIRouter(
 )
 
 
-@router.get("/{user_id}", response_model=Credential)
+@router.get("/{user_id}")
 async def get_user(user_id: int):
     """ユーザー情報取ってくる"""
     # ユーザー情報をDBから取ってくる
     credential = Credential
     credential.email = "sample"
-
-    return credential
+    return {"id": 1}
+    # return credential
 
 
 @router.post("/register", response_model=Credential)
