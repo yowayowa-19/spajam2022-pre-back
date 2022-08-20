@@ -1,10 +1,12 @@
 from fastapi import FastAPI
-from src.routers import users missions ranking
+from routers import users, missions, ranking
 import uvicorn
 
 
+app = FastAPI()
+
+
 def main():
-    app = FastAPI()
     app.include_router(users.router)
     app.include_router(missions.router)
     app.include_router(ranking.router)
