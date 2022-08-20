@@ -2,6 +2,9 @@ from fastapi import APIRouter
 
 from pydantic import BaseModel
 
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+
 
 class Credential(BaseModel):
     email: str
@@ -23,14 +26,16 @@ router = APIRouter(
     )
 
 
-@router.get("/{user_id}", response_model=Credential)
+@router.get("/{user_id}")
 async def get_user(user_id: int):
     """ ユーザー情報取ってくる"""
     # ユーザー情報をDBから取ってくる
     credential = Credential
     credential.email = "sample"
-
-    return credential
+    # json_compatible_item_data = jsonable_encoder(credential)
+    #return JSONResponse(content=json_compatible_item_data)
+    return {"id": 1}
+    # return credential
 
 
 @router.post("/register", response_model=Credential)
