@@ -26,13 +26,13 @@ def create_user(credential: Credential):
         cur.execute("SELECT * FROM users WHERE email = %s", (credential.email,))
         if cur.rowcount == 0:
             cur.execute(
-                "INSERT INTO users (name, email, region) VALUES (?, ?, ?)",
+                "INSERT INTO users (name, email, region) VALUES (%s, %s, %s)",
                 (credential.user_name, credential.email, credential.region),
             )
             conn.commit()
             return cur.fetchone()[0]
         else:
-            return False
+            return 0
 
 
 def update_user():
