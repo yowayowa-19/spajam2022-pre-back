@@ -45,10 +45,12 @@ async def get_user(user_id: int):
 
 @router.post("/register")
 async def register_user(credential: Credential):
-    """ユーザー新規登録"""
-    print(credential)
-    # ユーザーの登録処理
-
+    """
+    ユーザー新規登録
+    credentialを受け取って、ユーザー登録を行う
+    成功時: 200
+    失敗時: 400
+    """
     result = create_user(credential)
     if result:
         return 
@@ -57,11 +59,22 @@ async def register_user(credential: Credential):
 
 @router.post("/login")
 async def login_user(credential: Credential):
-    """ログインする"""
+    """
+    ログイン
+    credentialを受け取って、ログインを行う
+    user_id: intを返す
+    login後のAPI呼び出し時にuser_idパラメータで与える必要あり
+    成功時: user_id > 1
+    失敗時: 0
+    """
     return {"user_id": 2000}
 
 
 @router.post("/profile", response_model=User)
 async def update_profile(user: User):
-    """ユーザーの情報更新"""
+    """
+    ユーザーの情報更新
+    Userを受け取って、profileの更新を行う
+    登録したUserをそのまま帰す
+    """
     return User
