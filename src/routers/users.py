@@ -17,6 +17,7 @@ class User(BaseModel):
     has_vehicles: bool
     has_aircon: bool
     has_tv: bool
+    annotation: str
 
 
 router = APIRouter(
@@ -25,19 +26,27 @@ router = APIRouter(
 )
 
 
-@router.get("/{user_id}")
+@router.get("/{user_id}", response_model=User)
 async def get_user(user_id: int):
     """ユーザー情報取ってくる"""
     # ユーザー情報をDBから取ってくる
-    credential = Credential
-    credential.email = "sample"
-    return {"id": 1}
+    user = {
+            "user_id": 2000,
+            "region": "japan",
+            "has_vehicles": True,
+            "has_aircon": False,
+            "has_tv": False,
+            "annotation": "mock"
+            }
+
+    return user
     # return credential
 
 
-@router.post("/register", response_model=Credential)
+@router.post("/register")
 async def register_user(credential: Credential):
     """ユーザー新規登録"""
+    print(credential)
     # ユーザーの登録処理
 
     result = create_user(credential)
@@ -47,9 +56,10 @@ async def register_user(credential: Credential):
         return {"result": "fail"}
 
 
-@router.post("login")
-async def login_user():
-    pass
+@router.post("/login")
+async def login_user(credential: Credential):
+    """ログインする"""
+    return {"user_id": 2000}
 
 
 @router.post("/profile", response_model=User)
