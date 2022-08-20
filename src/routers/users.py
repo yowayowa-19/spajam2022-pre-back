@@ -42,8 +42,9 @@ async def register_user(credential: Credential):
 
     result = create_user(credential)
     if result:
-        return {"id": result}
-    # error
+        return {"result": "success"}
+    else:
+        return {"result": "fail"}
 
 
 @router.post("login")
