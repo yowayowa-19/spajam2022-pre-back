@@ -1,10 +1,11 @@
 import psycopg2
-from psycopg2 import connection, cursor
 
-from types import Credential
+class Credential:
+    email: str
+    user_name: str
+    password: str
 
-
-def connect() -> connection:
+def connect():
     # TODO read from config
     username = "yowayowa"
     hostname = "postgres"
@@ -22,12 +23,12 @@ def connect() -> connection:
 
 def create_user(credential: Credential):
     with connect() as conn, conn.cursor as cur:
-        cur: cursor
+        # cur: cursor
         cur.execute("SELECT * FROM users WHERE email = %s", (credential.email,))
         if cur.rowcount == 0:
             cur.execute(
-                "INSERT INTO users (name, email, region) VALUES (%s, %s, %s)",
-                (credential.user_name, credential.email, credential.region),
+                "INSERT INTO users (name, email) VALUES (%s, %s)",
+                (credential.user_name, credential.email),
             )
             conn.commit()
             return cur.fetchone()[0]

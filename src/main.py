@@ -1,7 +1,7 @@
-from fastapi import FastAPI
-from routers import users, missions, ranking
 import uvicorn
+from fastapi import FastAPI
 
+from routers import missions, ranking, users
 
 app = FastAPI()
 
