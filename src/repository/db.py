@@ -22,18 +22,19 @@ def connect():
 
 
 def create_user(credential: Credential):
-    with connect() as conn, conn.cursor as cur:
+    conn = connect()
+    with connect() as conn, conn.cursor() as cur:
         # cur: cursor
-        cur.execute("SELECT * FROM users WHERE email = %s", (credential.email,))
+        cur.execute("SELECT * FROM user_table WHERE email = %s", (credential.email,))
         if cur.rowcount == 0:
             cur.execute(
-                "INSERT INTO users (name, email) VALUES (%s, %s)",
+                "INSERT INTO user_table (name, email) VALUES (%s, %s)",
                 (credential.user_name, credential.email),
             )
             conn.commit()
-            return cur.fetchone()[0]
+            return True
         else:
-            return 0
+            return False
 
 
 def update_user():
