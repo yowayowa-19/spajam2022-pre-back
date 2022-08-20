@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS all_history_table (
     id serial PRIMARY KEY,
     completed_at timestamp ,
     user_id int,
-    mission_category str,
+    mission_category varchar(255),
     mission_id int
 );
 
