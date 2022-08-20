@@ -24,7 +24,7 @@ router = APIRouter(
 
 
 @router.get("/{user_id}", response_model=Credential)
-async def get_user():
+async def get_user(user_id: int):
     """ ユーザー情報取ってくる"""
     # ユーザー情報をDBから取ってくる
     credential = Credential
@@ -33,7 +33,7 @@ async def get_user():
     return credential
 
 
-@router.post("/register/{user_id}", response_model=Credential)
+@router.post("/register", response_model=Credential)
 async def register_user(credential: Credential):
     """ユーザー新規登録"""
     # ユーザーの登録処理
@@ -45,7 +45,7 @@ async def login_user():
     pass
 
 
-@router.post("/profile/{user_id}", response_model=User)
+@router.post("/profile", response_model=User)
 async def update_profile(user: User):
     """ユーザーの情報更新"""
     return User
