@@ -2,6 +2,8 @@ from fastapi import APIRouter
 
 from types import Credential, User
 
+from repository.db import create_user
+
 
 router = APIRouter(
     prefix="/users",
@@ -23,6 +25,7 @@ async def get_user(user_id: int):
 async def register_user(credential: Credential):
     """ユーザー新規登録"""
     # ユーザーの登録処理
+    create_user(credential)
     return credential
 
 
