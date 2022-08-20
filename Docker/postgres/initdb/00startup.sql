@@ -2,12 +2,11 @@ CREATE TABLE IF NOT EXISTS user_table (
     id serial PRIMARY KEY,
     name varchar(255),
     email varchar(255),
-    region int,
-    has_car boolean,
-    has_bike boolean,
-    has_aircon boolean,
-    has_tv boolean,
-    total_points int
+    region int DEFAULT 0,
+    has_car boolean DEFAULT false,
+    has_aircon boolean DEFAULT false,
+    has_tv boolean DEFAULT false,
+    total_points int DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS daily_mission_table (
