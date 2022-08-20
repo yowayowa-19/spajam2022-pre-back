@@ -1,5 +1,7 @@
 from fastapi import APIRouter
 
+
+from repository.db import create_user
 from pydantic import BaseModel
 
 
@@ -21,12 +23,12 @@ class User(BaseModel):
 router = APIRouter(
     prefix="/users",
     tags=["users"],
-    )
+)
 
 
 @router.get("/{user_id}", response_model=User)
 async def get_user(user_id: int):
-    """ ユーザー情報取ってくる"""
+    """ユーザー情報取ってくる"""
     # ユーザー情報をDBから取ってくる
     user = {
             "user_id": 2000,
@@ -46,7 +48,11 @@ async def register_user(credential: Credential):
     """ユーザー新規登録"""
     print(credential)
     # ユーザーの登録処理
-    return
+
+    result = create_user(credential)
+    if result:
+        return 
+    # error
 
 
 @router.post("/login")

@@ -12,6 +12,7 @@ INSERT INTO
     region_table
 VALUES
     (
+        (0, '未設定'),
         (1, '北海道'),
         (2, '東北'),
         (3, '関東'),
