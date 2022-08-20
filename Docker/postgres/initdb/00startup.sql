@@ -28,21 +28,21 @@ CREATE TABLE IF NOT EXISTS weekly_mission_table (
 
 CREATE TABLE IF NOT EXISTS daily_history_table (
     id serial PRIMARY KEY,
-    completed_at datetime,
+    completed_at timestamp ,
     user_id int,
     mission_id int
 );
 
 CREATE TABLE IF NOT EXISTS weekly_history_table (
     id serial PRIMARY KEY,
-    completed_at datetime,
+    completed_at timestamp ,
     user_id int,
     mission_id int
 );
 
 CREATE TABLE IF NOT EXISTS all_history_table (
     id serial PRIMARY KEY,
-    completed_at datetime,
+    completed_at timestamp ,
     user_id int,
     mission_category str,
     mission_id int

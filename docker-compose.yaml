@@ -7,11 +7,21 @@ services:
       dockerfile: ./Docker/python/Dockerfile
     volumes:
       - ./src:/usr/src/app
+      - ./scripts:/usr/scripts
     secrets:
       - POSTGRES_PASSWORD
     ports:
       - 8000:8000
-    command: [ "python", "main.py" ]
+    command:
+      [
+        "/usr/scripts/wait-for-it.sh",
+        "--timeout=90",
+        "--strict",
+        " postgres:5432",
+        "--",
+        "python",
+        "main.py"
+      ]
     restart: always
 
   postgres:
@@ -25,10 +35,11 @@ services:
       - 5432:5432
     container_name: spajam2022-postgres-db
     volumes:
+      - ./Docker/postgres/initdb:/docker-entrypoint-initdb.d
       - ./db/postgres:/var/lib/postgresql/data
     secrets:
       - POSTGRES_PASSWORD
 
 secrets:
   POSTGRES_PASSWORD:
-    file: ./postgresql/secrets/password.txt
+    file: ./secrets/password.txt
