@@ -25,8 +25,11 @@ async def get_user(user_id: int):
 async def register_user(credential: Credential):
     """ユーザー新規登録"""
     # ユーザーの登録処理
-    create_user(credential)
-    return credential
+
+    result = create_user(credential)
+    if result:
+        return {"id": result}
+    # error
 
 
 @router.post("login")
