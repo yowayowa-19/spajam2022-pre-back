@@ -12,17 +12,19 @@ CREATE TABLE IF NOT EXISTS user_table (
 CREATE TABLE IF NOT EXISTS daily_mission_table (
     id serial PRIMARY KEY,
     name varchar(255),
-    content varchar(255),
+    content varchar(255) DEFAULT '',
     tag_id int,
-    point int
+    point int,
+    has_slider boolean
 );
 
 CREATE TABLE IF NOT EXISTS weekly_mission_table (
     id serial PRIMARY KEY,
     name varchar(255),
-    content varchar(255),
+    content varchar(255) DEFAULT '',
     tag_id int,
-    point int
+    point int,
+    has_slider boolean
 );
 
 CREATE TABLE IF NOT EXISTS daily_history_table (
