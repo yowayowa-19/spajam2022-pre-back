@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import re
 from typing import Literal
 import psycopg2
 
@@ -45,48 +46,65 @@ def update_user():
     pass
 
 
-@dataclass
-class Mission:
-    mission_id: int
-    title: str
-    describe: str
-    point: int
-    status: bool
+# @dataclass
+# class Mission:
+#     mission_id: int
+#     title: str
+#     describe: str
+#     point: int
+#     cuurent_point: int
+#     status: bool
 
 
 def get_missions(user_id: int, type: Literal["daily", "weekly"]):
     with connect() as conn, conn.cursor() as cur:
-        cur.execute(
-            """
-        SELECT 
-            mission.id, 
-            mission.title, 
-            mission.describe, 
-            mission.point, 
-            history.current_point,
-            history.completed_at
-        FROM %s AS history
-        INNER JOIN %s AS mission
-        ON %s.mission_id = %s.id
-        WHERE history.user_id = %s
-        """,
-            (
-                type + "_history_table",
-                type + "_mission_table",
-                type + "_history_table",
-                type + "_mission_table",
-                user_id,
-            ),
-        )
-        missions: list[Mission] = [
-            Mission(
-                mission_id=item[0],
-                title=item[1],
-                describe=item[2],
-                point=item[4],
-                status=item[3] == item[4] or item[5] is not None,
+        if type == "daily":
+            cur.execute(
+                """
+            SELECT 
+                mission.id, 
+                mission.title, 
+                mission.describe, 
+                mission.point, 
+                history.current_point,
+                history.completed_at
+            FROM daily_history_table AS history
+            INNER JOIN daily_mission_table AS mission
+            ON history.mission_id = mission.id
+            WHERE history.user_id = %s
+            """,
+                (user_id,),
             )
-            for item in cur.fetchall()
+        else:
+            cur.execute(
+                """
+            SELECT 
+                mission.id, 
+                mission.title, 
+                mission.describe, 
+                mission.point, 
+                history.current_point,
+                history.completed_at
+            FROM weekly_history_table AS history
+            INNER JOIN weekly_mission_table AS mission
+            ON history.mission_id = mission.id
+            WHERE history.user_id = %s
+            """,
+                (user_id,),
+            )
+
+        result = cur.fetchall()
+
+        missions: list[dict] = [
+            {
+                "mission_id": item[0],
+                "title": item[1],
+                "describe": item[2],
+                "point": item[3],
+                "current_point": item[4],
+                "status": item[3] == item[4] or item[5] is not None,
+            }
+            for item in result
         ]
         return missions
 
@@ -100,15 +118,26 @@ def create_missions(type: Literal["daily", "weekly"]):
     with connect() as conn, conn.cursor() as cur:
         cur.execute("SELECT id FROM user_table")
         user_ids: list[int] = [item[0] for item in cur.fetchall()]
-        cur.execute("SELECT id FROM %s", (type + "_mission_table",))
+        if type == "daily":
+            cur.execute("SELECT id FROM daily_mission_table")
+        else:
+            cur.execute("SELECT id FROM weekly_mission_table")
         missions: list[int] = [item[0] for item in cur.fetchall()]
         for user_id in user_ids:
             for mission_id in missions:
-                cur.execute(
-                    "INSERT INTO %s (user_id, mission_id) VALUES (%s, %s)",
-                    (type + "_history_table", user_id, mission_id),
-                )
+                if type == "daily":
+                    cur.execute(
+                        "INSERT INTO daily_history_table (user_id, mission_id) VALUES (%s, %s)",
+                        (user_id, mission_id),
+                    )
+                else:
+                    cur.execute(
+                        "INSERT INTO weekly_history_table (user_id, mission_id) VALUES (%s, %s)",
+                        (user_id, mission_id),
+                    )
         conn.commit()
+        # cur.execute("SELECT * FROM daily_history_table")
+        # print(cur.fetchall())
 
 
 def delete_missions(type: Literal["daily", "weekly"]):

@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS daily_history_table (
     completed_at timestamp,
     user_id int,
     mission_id int,
-    current_point int
+    current_point int DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS weekly_history_table (
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS weekly_history_table (
     completed_at timestamp,
     user_id int,
     mission_id int,
-    current_point int
+    current_point int DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS all_history_table (

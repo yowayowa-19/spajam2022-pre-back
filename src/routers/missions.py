@@ -1,8 +1,6 @@
 from fastapi import APIRouter
-
 from pydantic import BaseModel
-
-from typing import List
+from repository import db
 
 
 class Mission(BaseModel):
@@ -10,12 +8,13 @@ class Mission(BaseModel):
     title: str
     describe: str
     point: int
+    current_point: int
     status: bool
 
 
 class Missions(BaseModel):
-    weekly: List[Mission]
-    daily: List[Mission]
+    weekly: list[Mission]
+    daily: list[Mission]
 
 
 class DoneMission(BaseModel):
@@ -28,16 +27,21 @@ class DoneMission(BaseModel):
 router = APIRouter()
 
 
-@router.get("/missions/{user_id}", response_model=Missions)
+@router.get("/missions", response_model=Missions)
 async def get_missions(user_id: int):
-    mission = {
-        "mission_id": 1,
-        "title": "sample mission",
-        "describe": "ganbatte",
-        "point": 10,
-        "status": False,
-    }
-    missions = {"weekly": [mission], "daily": [mission]}
+    # mission = {
+    #     "mission_id": 1,
+    #     "title": "sample mission",
+    #     "describe": "ganbatte",
+    #     "point": 10,
+    #     "status": False,
+    # }
+
+    daily = db.get_missions(user_id, "daily")
+    weekly = db.get_missions(user_id, "weekly")
+
+    missions = {"daily": daily, "weekly": weekly}
+
     return missions
 
 
@@ -51,6 +55,7 @@ async def done_mission(done_mission: DoneMission):
 @router.get("/create/missions/")
 async def create_missions(type: str):
     if type == "daily" or type == "weekly":
+        db.create_missions(type)
         return {"status": True}
     else:
         return {"status": False}
