@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-import re
 from typing import Literal
 import psycopg2
 
 
+@dataclass
 class Credential:
     email: str
     user_name: str
@@ -109,9 +109,73 @@ def get_missions(user_id: int, type: Literal["daily", "weekly"]):
         return missions
 
 
-def complete_mission():
+@dataclass
+class DoneMission:
+    user_id: int
+    mission_id: int
+    type: Literal["daily", "weekly"]
+    point: int
+
+
+def update_mission(args: DoneMission):
     with connect() as conn, conn.cursor() as cur:
-        cur.execute()
+        # daily | weekly
+        # update daily_mission_table or weekly_mission_table
+
+        # get previeous point
+        if args.type == "daily":
+            cur.execute(
+                "SELECT current_point FROM daily_history_table WHERE user_id = %s AND mission_id = %s",
+                (args.user_id, args.mission_id),
+            )
+        else:
+            cur.execute(
+                "SELECT current_point FROM weekly_history_table WHERE user_id = %s AND mission_id = %s",
+                (args.user_id, args.mission_id),
+            )
+        previouts_point = cur.fetchone()[0]
+
+        if args.type == "daily":
+            cur.execute(
+                "UPDATE daily_history_table SET current_point = %s WHERE user_id = %s AND mission_id = %s",
+                (args.point, args.user_id, args.mission_id),
+            )
+        else:
+            cur.execute(
+                "UPDATE weekly_history_table SET current_point = %s WHERE user_id = %s AND mission_id = %s",
+                (args.point, args.user_id, args.mission_id),
+            )
+
+        # get current_point
+        if args.type == "daily":
+            cur.execute(
+                "SELECT current_point FROM daily_history_table WHERE user_id = %s AND mission_id = %s",
+                (args.user_id, args.mission_id),
+            )
+        else:
+            cur.execute(
+                "SELECT current_point FROM weekly_history_table WHERE user_id = %s AND mission_id = %s",
+                (args.user_id, args.mission_id),
+            )
+        current_point = cur.fetchone()[0]
+
+        # update user status
+        cur.execute(
+            "UPDATE user_table SET total_points = total_points + %s WHERE id = %s",
+            (current_point - previouts_point, args.user_id),
+        )
+
+        # return user data
+        cur.execute("SELECT id, region, has_car, has_aircon, has_tv, total_points FROM user_table WHERE id = %s", (args.user_id,))
+        user = cur.fetchone()
+        return {
+            "user_id": user[0],
+            "region": user[1],
+            "has_vehicles": user[2],
+            "has_aircon": user[3],
+            "has_tv": user[4],
+            "total_point": user[5],
+        }
 
 
 def create_missions(type: Literal["daily", "weekly"]):

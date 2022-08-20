@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 from repository import db
+from routers.users import User
 
 
 class Mission(BaseModel):
@@ -45,10 +46,16 @@ async def get_missions(user_id: int):
     return missions
 
 
-@router.post("/mission", response_model=DoneMission)
-async def done_mission(done_mission: DoneMission):
-    # update_task()
-    return {"status": True}
+@router.post("/mission", response_model=User)
+async def update_mission(done_mission: DoneMission):
+    "type = daily | weekly"
+    result = db.update_mission(done_mission)
+    # class DoneMission(BaseModel):
+    #     user_id: int
+    #     mission_id: int
+    #     type: str # daily | weekly
+    #     point: int
+    return result
 
 
 # ほんとは叩ける先を絞る必要がある
