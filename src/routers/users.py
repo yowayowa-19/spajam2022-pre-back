@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException
 
-
 from repository.db import create_user, password_check_user, update_user_profile
 from pydantic import BaseModel
 
@@ -17,7 +16,8 @@ class User(BaseModel):
     has_vehicles: bool
     has_aircon: bool
     has_tv: bool
-    annotation: str
+    total_point: int
+    # annotation: str
 
     class Config:
         orm_mode = True
@@ -29,7 +29,7 @@ router = APIRouter(
 )
 
 
-@router.get("/{user_id}", response_model=User)
+@router.get("/", response_model=User)
 async def get_user(user_id: int):
     """ユーザー情報取ってくる"""
     # ユーザー情報をDBから取ってくる
