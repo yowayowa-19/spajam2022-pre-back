@@ -60,10 +60,18 @@ def update_user_profile(user: User):
         cur.execute(
             "UPDATE user_table SET has_car = %s, has_aircon = %s, has_tv = %s\
                 WHERE id = %s",
-            (user.has_vehicles, user.has_aircon, user.has_tv, user.user_id))
+            (user.has_vehicles, user.has_aircon, user.has_tv, user.user_id,))
         conn.commit()
-        return True
-
+        cur.execute(
+                "SELECT id, region, has_car, has_aircon, has_tv FROM user_table WHERE id = %s",
+                (user.user_id,))
+        result = cur.fetchone()
+        user.user_id = result[0]
+        user.region = result[1]
+        user.has_vehicles = result[2]
+        user.has_aircon = result[3]
+        user.has_tv = result[4]
+        return user
 
 def password_check_user(credential: Credential):
     conn = connect()
