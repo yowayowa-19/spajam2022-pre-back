@@ -1,7 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
-
-from repository.db import create_user
+from repository.db import create_user, password_check_user, update_user_profile
 from pydantic import BaseModel
 
 
@@ -20,6 +19,9 @@ class User(BaseModel):
     total_point: int
     # annotation: str
 
+    class Config:
+        orm_mode = True
+
 
 router = APIRouter(
     prefix="/users",
@@ -32,7 +34,7 @@ async def get_user(user_id: int):
     """ユーザー情報取ってくる"""
     # ユーザー情報をDBから取ってくる
     user = {
-            "user_id": 2000,
+            "user_id": user_id,
             "region": "japan",
             "has_vehicles": True,
             "has_aircon": False,
@@ -53,10 +55,12 @@ async def register_user(credential: Credential):
     失敗時: 400
     """
     result = create_user(credential)
-    if result:
-        return {"result": "success"}
-    else:
-        return {"result": "fail"}
+    if not result:
+        raise HTTPException(
+                status_code=400,
+                detail="ERROR: register\n"
+            )
+    return {"result": "success"}
 
 
 @router.post("/login")
@@ -69,7 +73,13 @@ async def login_user(credential: Credential):
     成功時: user_id > 1
     失敗時: 0
     """
-    return {"user_id": 2000}
+    result = password_check_user(credential)
+    if result == 0:
+        raise HTTPException(
+                status_code=400,
+                detail="ERROR: login\n"
+            )
+    return {"user_id": result}
 
 
 @router.post("/profile", response_model=User)
@@ -79,4 +89,6 @@ async def update_profile(user: User):
     Userを受け取って、profileの更新を行う
     登録したUserをそのまま帰す
     """
+    print(user)
+    #update_user_profile(user)
     return User

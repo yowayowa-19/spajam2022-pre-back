@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS user_table (
     id serial PRIMARY KEY,
     name varchar(255),
     email varchar(255),
+		password varchar(255),
     region int DEFAULT 0,
     has_car boolean DEFAULT false,
     has_aircon boolean DEFAULT false,
