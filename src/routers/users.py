@@ -89,6 +89,5 @@ async def update_profile(user: User):
     Userを受け取って、profileの更新を行う
     登録したUserをそのまま帰す
     """
-    print(user)
-    #update_user_profile(user)
-    return User
+    result = update_user_profile(user)
+    return result
