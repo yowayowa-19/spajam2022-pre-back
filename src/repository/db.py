@@ -1,9 +1,23 @@
 import psycopg2
 
+
 class Credential:
     email: str
     user_name: str
     password: str
+
+
+class User:
+    user_id: int
+    region: str
+    has_vehicles: bool
+    has_aircon: bool
+    has_tv: bool
+    annotation: str
+
+    class Config:
+        orm_mode = True
+
 
 def connect():
     # TODO read from config
@@ -25,11 +39,11 @@ def create_user(credential: Credential):
     conn = connect()
     with connect() as conn, conn.cursor() as cur:
         # cur: cursor
-        cur.execute("SELECT * FROM user_table WHERE email = %s", (credential.email,))
+        cur.execute("SELECT * FROM user_table WHERE name = %s", (credential.user_name,))
         if cur.rowcount == 0:
             cur.execute(
-                "INSERT INTO user_table (name, email) VALUES (%s, %s)",
-                (credential.user_name, credential.email),
+                "INSERT INTO user_table (name, password) VALUES (%s, %s)",
+                (credential.user_name, credential.password),
             )
             conn.commit()
             return True
@@ -37,5 +51,31 @@ def create_user(credential: Credential):
             return False
 
 
-def update_user():
-    pass
+def update_user_profile(user: User):
+    conn = connect() 
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute(
+            "UPDATE user_table SET has_car = %s, has_aircon = %s, has_tv = %s\
+                WHERE id = %s",
+            (user.has_vehicles, user.has_aircon, user.has_tv, user.user_id))
+        conn.commit()
+        return True
+
+
+def password_check_user(credential: Credential):
+    conn = connect()
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute("SELECT id,password FROM user_table WHERE name = %s",
+            (credential.user_name,))
+        if cur.rowcount == 0:
+            return 0
+        elif cur.rowcount >= 2:
+            return 0
+        else:
+            res = cur.fetchall()
+            if res[0][1] == credential.password:
+                return res[0][0]
+            else:
+                return 0
+
+  
