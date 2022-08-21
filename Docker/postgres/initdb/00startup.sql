@@ -11,41 +11,37 @@ CREATE TABLE IF NOT EXISTS user_table (
 
 CREATE TABLE IF NOT EXISTS daily_mission_table (
     id serial PRIMARY KEY,
-    title varchar(255),
-    describe varchar(255) DEFAULT '',
+    name varchar(255),
+    content varchar(255),
     tag_id int,
-    point int,
-    has_slider boolean
+    point int
 );
 
 CREATE TABLE IF NOT EXISTS weekly_mission_table (
     id serial PRIMARY KEY,
-    title varchar(255),
-    describe varchar(255) DEFAULT '',
+    name varchar(255),
+    content varchar(255),
     tag_id int,
-    point int,
-    has_slider boolean
+    point int
 );
 
 CREATE TABLE IF NOT EXISTS daily_history_table (
     id serial PRIMARY KEY,
-    completed_at timestamp,
+    completed_at timestamp ,
     user_id int,
-    mission_id int,
-    current_point int DEFAULT 0
+    mission_id int
 );
 
 CREATE TABLE IF NOT EXISTS weekly_history_table (
     id serial PRIMARY KEY,
-    completed_at timestamp,
+    completed_at timestamp ,
     user_id int,
-    mission_id int,
-    current_point int DEFAULT 0
+    mission_id int
 );
 
 CREATE TABLE IF NOT EXISTS all_history_table (
     id serial PRIMARY KEY,
-    completed_at timestamp,
+    completed_at timestamp ,
     user_id int,
     mission_category varchar(255),
     mission_id int

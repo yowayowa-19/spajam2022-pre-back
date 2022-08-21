@@ -1,7 +1,8 @@
 from fastapi import APIRouter
+
 from pydantic import BaseModel
-from repository import db
-from routers.users import User
+
+from typing import List
 
 
 class Mission(BaseModel):
@@ -9,69 +10,33 @@ class Mission(BaseModel):
     title: str
     describe: str
     point: int
-    current_point: int
     status: bool
 
 
 class Missions(BaseModel):
-    weekly: list[Mission]
-    daily: list[Mission]
-
-
-class DoneMission(BaseModel):
-    user_id: int
-    mission_id: int
-    type: str # daily | weekly
-    point: int
+    weekly: List[Mission]
+    daily: List[Mission]
 
 
 router = APIRouter()
 
 
-@router.get("/missions", response_model=Missions)
+@router.get("/missions/{user_id}", response_model=Missions)
 async def get_missions(user_id: int):
-    # mission = {
-    #     "mission_id": 1,
-    #     "title": "sample mission",
-    #     "describe": "ganbatte",
-    #     "point": 10,
-    #     "status": False,
-    # }
-
-    daily = db.get_missions(user_id, "daily")
-    weekly = db.get_missions(user_id, "weekly")
-
-    missions = {"daily": daily, "weekly": weekly}
-
+    mission = {
+            "mission_id": 1,
+            "title": "sample mission",
+            "describe": "ganbatte",
+            "point": 10,
+            "status": False
+            }
+    missions = {
+            "weekly": [mission],
+            "daily": [mission]
+            }
     return missions
 
 
-@router.post("/mission", response_model=User)
-async def update_mission(done_mission: DoneMission):
-    "type = daily | weekly"
-    result = db.update_mission(done_mission)
-    # class DoneMission(BaseModel):
-    #     user_id: int
-    #     mission_id: int
-    #     type: str # daily | weekly
-    #     point: int
-    return result
-
-
-# ほんとは叩ける先を絞る必要がある
-@router.get("/create/missions/")
-async def create_missions(type: str):
-    if type == "daily" or type == "weekly":
-        db.create_missions(type)
-        return {"status": True}
-    else:
-        return {"status": False}
-
-
-# ほんとは叩ける先を絞る必要がある
-@router.delete("/missions")
-async def delete_missions(type: str):
-    if type == "daily" or type == "weekly":
-        return {"status": True}    
-    else:
-        return {"status": False}
+@router.post("/missions/{user_id}/done/mission_id{}")
+async def done_mission(user_id: int, mission_id: int):
+    return {"status": True}

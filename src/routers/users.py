@@ -17,8 +17,7 @@ class User(BaseModel):
     has_vehicles: bool
     has_aircon: bool
     has_tv: bool
-    total_point: int
-    # annotation: str
+    annotation: str
 
 
 router = APIRouter(
@@ -27,7 +26,7 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=User)
+@router.get("/{user_id}", response_model=User)
 async def get_user(user_id: int):
     """ユーザー情報取ってくる"""
     # ユーザー情報をDBから取ってくる
