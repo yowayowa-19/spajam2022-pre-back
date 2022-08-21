@@ -38,6 +38,16 @@ def connect():
     return conn
 
 
+def get_user_info(user_id: int):
+    conn = connect()
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute("SELECT name, total_points FROM user_table WHERE id = %s", (user_id,))
+        res = cur.fetchone()
+        user_info = {"user_name": res[0], "total_points": res[1]}
+        
+        return user_info
+
+
 def create_user(credential: Credential):
     conn = connect()
     with connect() as conn, conn.cursor() as cur:
