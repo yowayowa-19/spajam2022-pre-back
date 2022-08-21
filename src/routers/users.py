@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 
-from repository.db import create_user, password_check_user, update_user_profile
+from repository.db import create_user, password_check_user, update_user_profile, get_user_info
 from pydantic import BaseModel
 
 
@@ -23,26 +23,28 @@ class User(BaseModel):
         orm_mode = True
 
 
+class UserInfo(BaseModel):
+    user_name: str
+    total_points: int
+
+
 router = APIRouter(
     prefix="/users",
     tags=["users"],
 )
 
 
-@router.get("/", response_model=User)
+@router.get("/", response_model = UserInfo)
 async def get_user(user_id: int):
     """ユーザー情報取ってくる"""
     # ユーザー情報をDBから取ってくる
-    user = {
-            "user_id": user_id,
-            "region": "japan",
-            "has_vehicles": True,
-            "has_aircon": False,
-            "has_tv": False,
-            "annotation": "mock"
-            }
 
-    return user
+    if user_id == 0:
+        raise HTTPException(
+                status_code=400,
+                detail="ERROR: invalid user_id")
+    res = get_user_info(user_id)
+    return res
     # return credential
 
 
